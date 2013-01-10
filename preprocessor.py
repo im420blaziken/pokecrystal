@@ -341,8 +341,7 @@ def quote_translator(asm):
 
     if "section" in lowasm \
     or "incbin" in lowasm:
-        sys.stdout.write(asm)
-        return
+        return asm
 
     output = ""
     even = False
@@ -395,9 +394,7 @@ def quote_translator(asm):
 
         even = not even
 
-    sys.stdout.write(output)
-
-    return
+    return output
 
 def extract_token(asm):
     token = asm.split(" ")[0].replace("\t", "").replace("\n", "")
@@ -425,6 +422,8 @@ def macro_translator(macro, token, line):
     """
 
     assert macro.macro_name == token, "macro/token mismatch"
+
+    output = ""
 
     original_line = line
 
@@ -456,20 +455,20 @@ def macro_translator(macro, token, line):
 
     # write out a comment showing the original line
     if show_original_lines:
-        sys.stdout.write("; original_line: " + original_line)
+        output += ("; original_line: " + original_line)
 
     # "db" is a macro because of TextEndingCommand
     # rgbasm can handle "db" so no preprocessing is required
     # (don't check its param count)
     if macro.macro_name == "db" and macro in [TextEndingCommand, ItemFragment]:
-        sys.stdout.write(original_line)
-        return
+        output += (original_line)
+        return output
 
     # certain macros don't need an initial byte written
     # do: all scripting macros
     # don't: signpost, warp_def, person_event, xy_trigger
     if not macro.override_byte_check:
-        sys.stdout.write("db ${0:02X}\n".format(macro.id))
+        output += ("db ${0:02X}\n".format(macro.id))
 
     # --- long-winded sanity check goes here ---
 
@@ -515,8 +514,6 @@ def macro_translator(macro, token, line):
 
     # used for storetext
     correction = 0
-
-    output = ""
 
     index = 0
     while index < len(params):
@@ -564,7 +561,7 @@ def macro_translator(macro, token, line):
 
             index += 1
 
-    sys.stdout.write(output)
+    return (output)
 
 def include_file(asm):
     """This is more reliable than rgbasm/rgbds including files on its own."""
@@ -573,11 +570,17 @@ def include_file(asm):
 
     lines = open(filename, "r").readlines()
 
+    output = ""
+
     for line in lines:
-        read_line(line)
+        output += read_line(line)
+
+    return output
 
 def read_line(l):
     """Preprocesses a given line of asm."""
+
+    output = ""
 
     # strip and store any comment on this line
     if ";" in l:
@@ -589,24 +592,26 @@ def read_line(l):
     # handle INCLUDE as a special case either at the start of the line or
     # after the first character in the line (like a tab)
     if "INCLUDE \"" in [asm[0:9], asm[1:9]]:
-        include_file(asm)
+        output += include_file(asm)
 
     # convert text to bytes when a quote appears (not in a comment)
     elif "\"" in asm:
-        quote_translator(asm)
+        output += quote_translator(asm)
 
     # check against other preprocessor features
     else:
         macro, token = macro_test(asm)
 
         if macro:
-            macro_translator(macro, token, asm)
+            output += macro_translator(macro, token, asm)
         else:
-            sys.stdout.write(asm)
+            output += asm
 
     # show line comment
     if comment != None:
-        sys.stdout.write(comment)
+        output += (comment)
+
+    return output
 
 def preprocess(lines=None):
     """Main entry point for the preprocessor."""
@@ -618,9 +623,13 @@ def preprocess(lines=None):
         # split up the input into individual lines
         lines = lines.split("\n")
 
+    output = ""
+
     for l in lines:
-        read_line(l)
+        output += read_line(l)
+
+    return output
 
 # only run against stdin when not included as a module
 if __name__ == "__main__":
-    preprocess()
+    print(preprocess())
