@@ -2346,7 +2346,36 @@ UpdateGameTimer: ; 20ad
 	ret
 ; 210f
 
-INCBIN "baserom.gbc", $210f, $261f - $210f
+INCBIN "baserom.gbc", $210f, $23a3 - $210f
+
+LesserCopyBytes: ; 23a3
+; copies 12 bytes from [hl] to [de]
+; sets c to 0
+; called when loading a map
+
+; how many loop cycles?
+	ld c, 12
+
+.loop
+; read a byte at the next hl address
+	ld a, [hli]
+
+; put it at [de]
+	ld [de], a
+
+; move de address forward
+	inc de
+
+; update loop counter
+	dec c
+
+; loop until c is 0
+	jr nz, .loop ; 0x23a9 $fa
+
+	ret
+; 0x23ac
+
+INCBIN "baserom.gbc", $23ac, $261f - $23ac
 
 PushScriptPointer: ; 261f
 ; used to call a script from asm
