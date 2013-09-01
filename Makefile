@@ -1,6 +1,6 @@
 .SUFFIXES: .asm .tx .o .gbc .png .2bpp .lz
 
-TEXTFILES := $(shell find ./ -type f -name '*.asm' | grep -v pokecrystal.asm | grep -v constants.asm | grep -v gbhw.asm | grep -v hram.asm | grep -v constants | grep -v wram.asm)
+TEXTFILES := $(shell find ./ -type f -name '*.asm' | grep -v pokecrystal.asm | grep -v gbhw.asm | grep -v hram.asm | grep -v constants | grep -v wram.asm)
 TEXTQUEUE :=
 
 PNG_GFX    := $(shell find gfx/ -type f -name '*.png')
