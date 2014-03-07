@@ -14822,7 +14822,7 @@ Function100e8: ; 100e8 (4:40e8)
 	and a
 	jr nz, .asm_1010a
 	ld hl, MenuDataHeader_0x1013b
-	ld de, Jumptable_10153
+	ld de, PackTMJumptable
 	jr .asm_10110
 .asm_1010a
 	ld hl, MenuDataHeader_0x10124
@@ -14856,8 +14856,8 @@ MenuData2_0x1012c: ; 0x1012c
 ; 0x10137
 
 Jumptable_10137: ; 10137
-	dw Function10159
-	dw Function10492
+	dw PackTMFuncUse
+	dw PackItemFuncQuit
 ; 1013b
 
 MenuDataHeader_0x1013b: ; 0x1013b
@@ -14876,13 +14876,13 @@ MenuData2_0x10143: ; 0x10143
 	db "QUIT@"
 ; 0x10153
 
-Jumptable_10153: ; 10153
-	dw Function10159
-	dw Function103fd
-	dw Function10492
+PackTMJumptable: ; 10153 TMs
+	dw PackTMFuncUse ; USE
+	dw PackItemFuncGive ; GIVE
+	dw PackItemFuncQuit ; QUIT
 ; 10159
 
-Function10159: ; 10159
+PackTMFuncUse: ; 10159
 	callba Function2c7bf
 	ret c
 	callba Function2c7fb
@@ -15015,10 +15015,10 @@ MenuData2_0x10251: ; 0x10251
 
 Jumptable_1026a: ; 1026a
 	dw Function10311
-	dw Function103fd
-	dw Function10364
+	dw PackItemFuncGive
+	dw PackItemFuncToss ; #mark
 	dw Function103c2
-	dw Function10492
+	dw PackItemFuncQuit
 ; 10274
 
 MenuDataHeader_0x10274: ; 0x10274
@@ -15040,9 +15040,9 @@ MenuData2_0x1027c: ; 0x1027c
 
 Jumptable_10291: ; 10291
 	dw Function10311
-	dw Function103fd
-	dw Function10364
-	dw Function10492
+	dw PackItemFuncGive
+	dw PackItemFuncToss
+	dw PackItemFuncQuit
 ; 10299
 
 MenuDataHeader_0x10299: ; 0x10299
@@ -15062,7 +15062,7 @@ MenuData2_0x102a1: ; 0x102a1
 
 Jumptable_102ac: ; 102ac
 	dw Function10311
-	dw Function10492
+	dw PackItemFuncQuit
 ; 102b0
 
 MenuDataHeader_0x102b0: ; 0x102b0
@@ -15084,7 +15084,7 @@ MenuData2_0x102b8: ; 0x102b8
 Jumptable_102c7: ; 102c7
 	dw Function10311
 	dw Function103c2
-	dw Function10492
+	dw PackItemFuncQuit
 ; 102cd
 
 MenuDataHeader_0x102cd: ; 0x102cd
@@ -15105,10 +15105,10 @@ MenuData2_0x102d5: ; 0x102d5
 ; 0x102ea
 
 Jumptable_102ea: ; 102ea
-	dw Function103fd
-	dw Function10364
+	dw PackItemFuncGive
+	dw PackItemFuncToss
 	dw Function103c2
-	dw Function10492
+	dw PackItemFuncQuit
 ; 102f2
 
 MenuDataHeader_0x102f2: ; 0x102f2
@@ -15128,9 +15128,9 @@ MenuData2_0x102fa: ; 0x102fa
 ; 0x1030b
 
 Jumptable_1030b: ; 1030b
-	dw Function103fd
-	dw Function10364
-	dw Function10492
+	dw PackItemFuncGive
+	dw PackItemFuncToss
+	dw PackItemFuncQuit
 ; 10311
 
 Function10311: ; 10311
@@ -15191,7 +15191,7 @@ Function10355: ; 10355 (4:4355)
 	ret
 ; 10364 (4:4364)
 
-Function10364: ; 10364
+PackItemFuncToss: ; 10364
 	ld hl, UnknownText_0x10ae4
 	call Function10889
 	callba Function24fbf
@@ -15277,7 +15277,7 @@ Function103c2: ; 103c2
 	ret
 ; 103fd
 
-Function103fd: ; 103fd
+PackItemFuncGive: ; 103fd
 	ld a, [PartyCount] ; $dcd7
 	and a
 	jp z, Function10486
@@ -15343,7 +15343,7 @@ UnknownText_0x1048d: ; 0x1048d
 	db "@"
 ; 0x10492
 
-Function10492: ; 10492
+PackItemFuncQuit: ; 10492
 	ret
 ; 10493
 
@@ -27241,7 +27241,7 @@ Unknown_15cbf: ; 15cbf
 	dw Function15cef
 
 Unknown_15ccb: ; 15ccb
-	dw UnknownText_0x15e4f
+	dw MartBuyText_HowMany
 	dw UnknownText_0x15e54
 	dw UnknownText_0x15e63
 	dw UnknownText_0x15e5e
@@ -27484,7 +27484,7 @@ UnknownText_0x15e4a: ; 0x15e4a
 	db "@"
 ; 0x15e4f
 
-UnknownText_0x15e4f: ; 0x15e4f
+MartBuyText_HowMany: ; 0x15e4f
 	; How many?
 	text_jump UnknownText_0x1c4ca3
 	db "@"
@@ -27646,13 +27646,13 @@ Function15ee0: ; 15ee0
 ; 15eee
 
 Jumptable_15eee: ; 15eee
-	dw Function15efd
+	dw MartSellItemFunc
 	dw Function15efc
 	dw Function15efc
 	dw Function15efc
-	dw Function15efd
-	dw Function15efd
-	dw Function15efd
+	dw MartSellItemFunc
+	dw MartSellItemFunc
+	dw MartSellItemFunc
 ; 15efc
 
 Function15efc: ; 15efc
@@ -27660,18 +27660,18 @@ Function15efc: ; 15efc
 ; 15efd
 
 
-Function15efd: ; 15efd
+MartSellItemFunc: ; 15efd
 	callba _CheckTossableItem
 	ld a, [$d142]
 	and a
 	jr z, .asm_15f11
-	ld hl, UnknownText_0x15faf
+	ld hl, MartSellText_CantBuy
 	call PrintText
 	and a
 	ret
 
 .asm_15f11
-	ld hl, UnknownText_0x15f73
+	ld hl, MartSellText_HowMany
 	call PrintText
 	callba Function24af8
 	callba Function24fe1
@@ -27707,7 +27707,7 @@ Function15efd: ; 15efd
 	ret
 ; 15f73
 
-UnknownText_0x15f73: ; 0x15f73
+MartSellText_HowMany: ; 0x15f73
 	; How many?
 	text_jump UnknownText_0x1c4f33
 	db "@"
@@ -27762,7 +27762,7 @@ UnknownText_0x15faa: ; 0x15faa
 	db "@"
 ; 0x15faf
 
-UnknownText_0x15faf: ; 0x15faf
+MartSellText_CantBuy: ; 0x15faf
 	; Sorry, I can't buy that from you.
 	text_jump UnknownText_0x1c4fd7
 	db "@"
@@ -27791,10 +27791,10 @@ Function15fc3: ; 15fc3
 	ret
 ; 15fcd
 
-Function15fcd: ; 15fcd
-	call Function1d4f
-	call Functiona36
-	call Function1c07
+Function15fcd: ; 15fcd (5:5fcd)
+	call Function1d4f ; BUY #mark
+	call Functiona36  ; SELL
+	call Function1c07 ; QUIT
 	ret
 ; 15fd7
 
@@ -82708,7 +82708,7 @@ Functione2675: ; e2675 (38:6675)
 	jp [hl]
 
 ; no known jump sources
-BillsPCWithdrawJumptable: ; e2699 (38:6699) #mark
+BillsPCWithdrawJumptable: ; e2699 (38:6699)
 	dw BillsPCWithdrawFuncWithdraw ; Withdraw
 	dw BillsPCWithdrawFuncStats ; Stats
 	dw BillsPCWithdrawFuncRelease ; Release
